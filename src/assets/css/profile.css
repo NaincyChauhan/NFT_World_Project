@@ -1,0 +1,9 @@
+.form-control{
+    margin-bottom: 0px !important;
+}
+.spacer-20{
+    height: 40px;
+}
+.invalid-feedback{
+    display: block;
+}
