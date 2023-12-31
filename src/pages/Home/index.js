@@ -10,7 +10,7 @@ const Home = () => {
     const loading = useSelector(state => state.NFTWorld.loading);
     const nftData = useSelector(state => state.NFTWorld.nftData);
     const collection = useSelector(state => state.NFTWorld.allCollections);
-    console.log("these are the all connection is here", collection);
+    // console.log("these are the all connection is here", collection);
 
     const toggleNftItemExtra = (index) => {
         setNftExtraVisibility({

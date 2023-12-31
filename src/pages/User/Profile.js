@@ -1,8 +1,21 @@
+import { useState } from "react";
 import Footer from "../../components/Partials/Footer";
 import Header from "../../components/Partials/Header";
 import TabScript from "../../components/Partials/TabScript";
+import { useDispatch, useSelector } from 'react-redux';
 
-const Profile = () => {    
+const Profile = () => { 
+    const [nftExtraVisibility, setNftExtraVisibility] = useState({});   
+    const name_ = useSelector(state => state.provider.user);
+
+    const toggleNftItemExtra = (index) => {
+        setNftExtraVisibility({
+            ...nftExtraVisibility,
+            [index]: !nftExtraVisibility[index] || false,
+        });
+    };
+
+    console.log("Hello This is user data", name_.username);
     return (
         <div className="wrapper">
             <Header />
@@ -25,22 +38,22 @@ const Profile = () => {
                                                 <i className="fa fa-check"></i>
                                                 <div className="profile_name">
                                                     <h4>
-                                                        Monica Lucas
-                                                        <span className="profile_username">@monicaaa</span>
-                                                        <span id="wallet" className="profile_wallet">DdzFFzCqrhshMSxb9oW3mRo4MJrQkusV3fGFSTwaiu4wPBqMryA9DYVJCkW9n7twCffG5f5wX2sSkoDXGiZB1HPa7K7f865Kk4LqnrME</span>
+                                                        {name_.name}
+                                                        <span className="profile_username">{name_.username}</span>
+                                                        <span id="wallet" className="profile_wallet">{name_.address}</span>
                                                         <button id="btn_copy" title="Copy Text">Copy</button>
                                                     </h4>
                                                 </div>
                                         </div>
                                     </div>
-                                    <div className="profile_follow de-flex">
+                                    {/* <div className="profile_follow de-flex">
                                         <div className="de-flex-col">
                                             <div className="profile_follower">500 followers</div>
                                         </div>
                                         <div className="de-flex-col">
                                             <a href="#" className="btn-main">Follow</a>
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
 

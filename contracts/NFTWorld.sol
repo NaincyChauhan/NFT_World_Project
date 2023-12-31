@@ -19,6 +19,7 @@ contract NFTWorld is ERC721, ReentrancyGuard {
         uint8 mediaType;
         string mediaURI;
         address creator;
+        address owner;
         uint256 price;
         bool forSale;
     }
@@ -109,6 +110,7 @@ contract NFTWorld is ERC721, ReentrancyGuard {
             mediaType,
             mediaURI,
             msg.sender,
+            msg.sender,
             price,
             forSale
         );
@@ -144,6 +146,7 @@ contract NFTWorld is ERC721, ReentrancyGuard {
             tokenCount,
             mediaType,
             mediaURI,
+            msg.sender,
             msg.sender,
             price,
             forSale
@@ -206,7 +209,9 @@ contract NFTWorld is ERC721, ReentrancyGuard {
      * @dev Function to get collection data
      * @param nftId ID of the collection
      */
-    function getCollectionByNFTId(uint256 nftId) public view returns (Collection memory) {
+    function getCollectionByNFTId(
+        uint256 nftId
+    ) public view returns (Collection memory) {
         for (uint256 i = 1; i <= collectionCount; i++) {
             Collection storage collection = collections[i];
             for (uint256 j = 0; j < collection.nftIds.length; j++) {
@@ -277,6 +282,7 @@ contract NFTWorld is ERC721, ReentrancyGuard {
         _transfer(seller, msg.sender, id);
         seller.transfer(amountToSeller * 1 ether);
         manager.transfer(marketplaceFee);
+        nfts[id].owner = msg.sender;
         emit NFTSold(id, seller, msg.sender, nfts[id].price);
     }
 }
