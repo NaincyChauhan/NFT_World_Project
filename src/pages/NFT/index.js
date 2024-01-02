@@ -36,7 +36,6 @@ const Create = () => {
     });
 
     const onSubmit = async (values, { setSubmitting, formReset }) => {
-        console.log("these are the values", values);
         setSubmitting(true);
         // upload nft logo
         const logo = await UploadImage(values['title'], values['desc'], values['logo'], values['price']);
@@ -62,12 +61,11 @@ const Create = () => {
                 "keys": _keys
             },
         }));
-        console.log("Debugging 223232323", metadata);
         // const metadata = "metadata is here111";
         if (metadata !== 0) {
             const response = await createNFT(metadata, provider, dispatch, nftworld, values.type, values.price, true, values.collection)
             if (response.status === 1) {
-                ajaxMessage(1, "New Collection Created Successfully.");
+                ajaxMessage(1, "New NFT Created Successfully.");
             } else {
                 errorsHTMLMessage(response.error);
             }
@@ -141,7 +139,7 @@ const Create = () => {
                                         <div className="spacer-20"></div>
 
                                         {!collections || collections.length === 0 ? (
-                                            <></>
+                                            <h5>Please Create a collection</h5>
                                         ) : (
                                             <>
                                                 <h5>Choose collection</h5>
@@ -210,7 +208,7 @@ const Create = () => {
                                         <div className="spacer-single"></div>
 
                                         <button disabled={formik.isSubmitting} type="submit" id="submit" className="btn-main" value="Create Item">
-                                            {formik.isSubmitting ? 'Creating...' : 'Create Collection'}
+                                            {formik.isSubmitting ? 'Creating...' : 'Create NFT'}
                                         </button>
                                         <div className="spacer-single"></div>
                                     </div>

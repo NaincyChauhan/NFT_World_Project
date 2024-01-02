@@ -58,18 +58,18 @@ describe('NFT PORFOLIO', () => {
                 expect(NFTData[5]).to.equal(false);
             });
             
-            it("Should Return User NFTs && and Check User OwnerShip", async () => {
-                transcation = await nft.connect(manager).createNFT(0, "Image URL 2 ", 1, false);
-                result = await transcation.wait();
-                const NFTs = await nft.getUserNFTs(manager.address);
-                // console.log("Manager NFTs", NFTs, manager.address);
-                for (let index = 0; index < NFTs.length; index++) {
-                    const nftId = NFTs[index];
-                    let _nft_ = await nft.nfts(nftId);
-                    expect(_nft_.creator).to.equal(manager.address);
-                    expect(await nft.ownerOf(nftId)).to.equal(manager.address);
-                }
-            });
+            // it("Should Return User NFTs && and Check User OwnerShip", async () => {
+            //     transcation = await nft.connect(manager).createNFT(0, "Image URL 2 ", 1, false);
+            //     result = await transcation.wait();
+            //     const NFTs = await nft.getUserNFTs(manager.address);
+            //     // console.log("Manager NFTs", NFTs, manager.address);
+            //     for (let index = 0; index < NFTs.length; index++) {
+            //         const nftId = NFTs[index];
+            //         let _nft_ = await nft.nfts(nftId);
+            //         expect(_nft_.creator).to.equal(manager.address);
+            //         expect(await nft.ownerOf(nftId)).to.equal(manager.address);
+            //     }
+            // });
         });
 
         describe('Failure', () => {  

@@ -6,7 +6,6 @@ import getUserDetail from '../components/Requests/GetUserDetail';
 
 // // actions/reducer1Actions.js
 export const incrementCounter1 = (dispatch) => {
-    console.log("Deubugging 1111111");
     dispatch({ type: 'INCREMENT' });
 };
 
@@ -114,7 +113,6 @@ export const createcollection = async (metadata, name, provider, dispatch, nftwo
         const transcation = await nftworld.connect(signer).createCollection(metadata, name);
         const collection_result = await transcation.wait();
         const _event = collection_result.logs[0];
-        console.log("this is the event code", _event);
         if (_event.args[0] && _event.args[1]) {
             try {
                 dispatch({ type: "NEW_COLLECTION_SUCCESS", event: _event, collection_id: Number(_event.args[1]) });
@@ -227,69 +225,27 @@ export const NFTCreateSingle = async (metadata, provider, dispatch, nftworld, ty
     }
 }
 
-// export const LoadUserNFT = async (provider, dispatch, nftworld) => {
-//     const signer = await provider.getSigner();
-//     const userNFTs = await nftworld.getUserNFTs(signer.address);
-//     console.log("Debugging 000000", userNFTs);
-//     let items = {forSale:[],notForSale:[]};
-//     for (let i = 0; i < userNFTs.length; i++) {
-//         console.log("loope running first tiem");
-//         const item = await nftworld.nfts(userNFTs[i]);
-//         console.log("Debugging 111",item);
-//         // GET Total Price of NFT
-//         const metadata = await GetMetadata(item.mediaURI);
-//         console.log("Debugging 222", metadata);
-//         const data = {
-//             itemId: Number(item.id),
-//             MediaType: Number(item.mediaType),
-//             creator: item.creator,
-//             name: metadata.info.name,
-//             logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
-//             descripation: metadata.info.descripation,
-//             price: Number(item.price),
-//             data: metadata.keys
-//         };
-//         console.log("Debugging 333", data);
-//         if (item.forSale) {
-//             // Add Item IN Items List
-//             items.forSale.push(data);
-//         }else{
-//             items.notForSale.push(data);
-//         }
-//     }
-//     console.log("Debugging EVERYWHERE : ",items.forSale);
-//     console.log("these are the all user dataes",items);
-//     dispatch({ type: "USER_NFT_DATA", nftData: items })
-// }
-
-
-export const LoadUserNFT = async (provider, dispatch, nftworld) => {
-    const signer = await provider.getSigner();
-    const userNFTs = await nftworld.getUserNFTs(signer.address);
-    console.log("Debugging 000000", userNFTs);
-}
-
 export const AllNFTs = async (dispatch, nftworld) => {
     dispatch({ type: "UPDATE_LOADING", loading: true });
     const itemCount = await nftworld.tokenCount();
     let items = [];
     for (let i = 1; i <= itemCount; i++) {
         const item = await nftworld.nfts(i);
-        if (item.forSale) {
-            const metadata = await GetMetadata(item.mediaURI);
+        const metadata = await GetMetadata(item.mediaURI);
 
-            // Add Item IN Items List
-            items.push({
-                itemId: Number(item.id),
-                MediaType: Number(item.mediaType),
-                creator: item.creator,
-                name: metadata.info.name,
-                logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
-                descripation: metadata.info.descripation,
-                price: Number(item.price),
-                data: metadata.keys
-            })
-        }
+        // Add Item IN Items List
+        items.push({
+            itemId: Number(item.id),
+            MediaType: Number(item.mediaType),
+            creator: item.creator,
+            owner: item.owner,
+            name: metadata.info.name,
+            forSale: item.forSale,
+            logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
+            descripation: metadata.info.descripation,
+            price: Number(item.price),
+            data: metadata.keys
+        })
     }
     dispatch({ type: "NFT_DATA", nftData: items })
     dispatch({ type: "UPDATE_LOADING", loading: false });
@@ -361,7 +317,6 @@ const tokens = (n) => {
 export const buyNow = async (nftId,value, nftworld,provider) => {
     try {        
         const signer = await provider.getSigner();
-        console.log("this is the toke nvalue",value,"thisis the signer",signer);
         const transaction = await nftworld.connect(signer).buyNFT(nftId,{value:tokens(value)});
         await transaction.wait();
         return { "status": 1};

@@ -40,7 +40,6 @@ contract NFTWorld is ERC721, ReentrancyGuard {
 
     mapping(uint256 => NFT) public nfts;
 
-    mapping(address => uint256[]) public userNFTs;
     mapping(address => uint256[]) public userCollections;
     mapping(uint256 => Collection) public collections;
 
@@ -115,7 +114,6 @@ contract NFTWorld is ERC721, ReentrancyGuard {
             forSale
         );
         nfts[tokenCount] = newNFT;
-        userNFTs[msg.sender].push(tokenCount);
         emit NFTCreated(tokenCount, msg.sender);
     }
 
@@ -152,18 +150,8 @@ contract NFTWorld is ERC721, ReentrancyGuard {
             forSale
         );
         nfts[tokenCount] = newNFT;
-        userNFTs[msg.sender].push(tokenCount);
         collections[collectionId].nftIds.push(tokenCount);
         emit NFTCreated(tokenCount, msg.sender);
-    }
-
-    /**
-     * @dev Function to get NFTs owned by a user
-     * @param user Address of the user
-     * @return Array of NFT IDs owned by the user
-     */
-    function getUserNFTs(address user) public view returns (uint256[] memory) {
-        return userNFTs[user];
     }
 
     /**

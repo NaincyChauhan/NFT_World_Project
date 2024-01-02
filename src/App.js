@@ -13,6 +13,7 @@ import {
     allCollection
 } from './redux/intercations';
 import AppRouter from './pages/Router/index.js';
+// import { getUserNFTs } from './redux/selectors.js';
 const config = require("./config.json");
 
 function App() {
@@ -40,8 +41,9 @@ function App() {
             subscribeToEvents(nftWorld, dispatch);
             getCollection(provider, dispatch, nftWorld)
             allCollection(dispatch,nftWorld);
-            LoadUserNFT(provider, dispatch, nftWorld)
+            // LoadUserNFT(provider, dispatch, nftWorld)
             AllNFTs(dispatch, nftWorld)
+            // getUserNFTs(provider)
         } else {
             console.log("Wrong NETWORK, plase select eth mainnet");
         }
