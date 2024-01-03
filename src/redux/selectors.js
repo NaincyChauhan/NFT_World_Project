@@ -38,6 +38,7 @@ export const userNFTSelector = createSelector([account, nftData],
         const result = {
             owned: userNFTs.filter(item => item.owner === account_),
             created: userNFTs.filter(item => item.creator === account_),
+            onSale: userNFTs.filter(item => item.forSale === true),
         };
         return result;
     }

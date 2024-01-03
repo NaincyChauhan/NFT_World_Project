@@ -4,6 +4,7 @@ import Header from '../../components/Partials/Header';
 import { useSelector } from 'react-redux';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import NFTItem from '../../components/Partials/NFTItem';
 
 const Home = () => {
     const [nftExtraVisibility, setNftExtraVisibility] = useState({});
@@ -17,6 +18,13 @@ const Home = () => {
             ...nftExtraVisibility,
             [index]: !nftExtraVisibility[index] || false,
         });
+    };
+
+    const handleItemClick = (index) => {
+        const extraElement = document.getElementById(`nft__item_extra_${index}`);
+        if (extraElement) {
+            extraElement.classList.toggle("nft-extra-block");
+        }
     };
 
     return (
@@ -45,37 +53,7 @@ const Home = () => {
                                     nftData.map((element, index) => {
                                         return (
                                             element.forSale === true ? (
-                                                <div key={index} className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12">
-                                                    <div className="nft__item style-2">
-                                                        <div className="nft__item_wrap">
-                                                            <div className={`nft__item_extra${nftExtraVisibility[index] ? ' nft-extra-block ' : ' nft-extra-unblock'}`}>
-                                                                <div className="nft__item_buttons">
-                                                                    <button><a href={`/nft/${element.name}/${element.itemId}`}>Buy Now</a></button>
-                                                                    <div className="nft__item_share">
-                                                                        <h4>Share</h4>
-                                                                        <a href={`https://www.facebook.com/sharer/sharer.php?u=/nft/${element.name}/${element.itemId}`} target="_blank"><i className="fa fa-facebook fa-lg"></i></a>
-                                                                        <a href={`https://twitter.com/intent/tweet?url=/nft/${element.name}/${element.itemId}`} target="_blan"><i className="fa fa-twitter fa-lg"></i></a>
-                                                                        <a href={`mailto:?subject=I wanted you to see this site&amp;body=/nft/${element.name}/${element.itemId}`}><i className="fa fa-envelope fa-lg"></i></a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <a href={`/nft/${element.name}/${element.itemId}`}>
-                                                                <img src={element.logo} className="lazy nft__item_preview" alt={element.name} />
-                                                            </a>
-                                                        </div>
-                                                        <div className="nft__item_info">
-                                                            <a href={`/nft/${element.name}/${element.itemId}`}>
-                                                                <h4>{element.name}</h4>
-                                                            </a>
-                                                            <div className="nft__item_click" onClick={() => toggleNftItemExtra(index)}>
-                                                                <span></span>
-                                                            </div>
-                                                            <div className="nft__item_price">
-                                                                {element.price} ETH
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>)
+                                                <NFTItem key={index} data={element} type={"NFT_"+index} handleItemClick={handleItemClick}  />)
                                                 : ("")
                                         );
                                     })

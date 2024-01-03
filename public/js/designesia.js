@@ -2102,7 +2102,6 @@
             $(nftItemExtra).toggleClass("nft__item_extra_toggle");
             // Now you can work with the nftItemExtra element
             // For example, you can display or manipulate it
-            console.log("this function is running very well here.",nftItemExtra);
         });
 
         $(".nft__item_click12121").click(function (){
