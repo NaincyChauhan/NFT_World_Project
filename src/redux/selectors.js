@@ -5,6 +5,7 @@ import getUserDetail from "../components/Requests/GetUserDetail";
 const account = state => get(state, "provider.account");
 const userCollectionsIds = state => get(state, "NFTWorld.collections.ids", []);
 const userCollections = state => get(state, "NFTWorld.collections.collections", []);
+const collectionData = state => get(state, "NFTWorld.allCollections", []);
 const nftData = state => get(state, "NFTWorld.nftData", []);
 
 
@@ -41,5 +42,14 @@ export const userNFTSelector = createSelector([account, nftData],
             onSale: userNFTs.filter(item => item.forSale === true),
         };
         return result;
+    }
+);
+
+export const userCollectionSelector = createSelector([account, collectionData],
+    (account_, collectionData_) => {
+        const userCollections = collectionData_.filter(
+            item => item.owner === account_
+        );
+        return userCollections;
     }
 );

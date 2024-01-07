@@ -92,6 +92,10 @@ footer,
     background: var(--primary-color);
 }
 
+#social-icons .social-icons .share-l{
+    background: var(--secondary-color);
+}
+
 
 .id-color,
 #mainmenu li:hover>ul,
@@ -190,7 +194,7 @@ address.s1 span i,
 .profile_username,
 .de_tab.tab_methods .de_nav li.active span i,
 a.btn-main.btn-light,
-.nft_attr h5 {
+.nft_attr h5, .desc-tag span {
     color: var(--secondary-color);
 }
 

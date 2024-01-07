@@ -1,6 +1,7 @@
 const Footer = () => {
     return <>
         {/* footer begin */}
+        <a href="#" id="back-to-top"></a>
         <footer>
             <div className="container">
                 <div className="row">

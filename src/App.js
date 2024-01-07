@@ -7,10 +7,10 @@ import {
     loadNetwork,
     loadMarketplace,
     subscribeToEvents,
-    getCollection,
     LoadUserNFT,
     AllNFTs,
-    allCollection
+    allCollection,
+    userCollections
 } from './redux/intercations';
 import AppRouter from './pages/Router/index.js';
 // import { getUserNFTs } from './redux/selectors.js';
@@ -30,8 +30,10 @@ function App() {
 
         // Fetch Current Metamask Account
         window.ethereum.on("accountsChanged", async () => {
-            await loadAccount(provider, dispatch);
-            window.location.reload();
+            const user = await loadAccount(provider, dispatch);
+            if (user === true) {
+                window.location.reload();
+            }
         });
 
         // Fetch Current Network ChainId
@@ -39,9 +41,8 @@ function App() {
         if (config[chainId]) {
             const nftWorld = await loadMarketplace(config[chainId].NFT.address, provider, dispatch);
             subscribeToEvents(nftWorld, dispatch);
-            getCollection(provider, dispatch, nftWorld)
             allCollection(dispatch,nftWorld);
-            // LoadUserNFT(provider, dispatch, nftWorld)
+            userCollections(nftWorld,provider,dispatch )
             AllNFTs(dispatch, nftWorld)
             // getUserNFTs(provider)
         } else {

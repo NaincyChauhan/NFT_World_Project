@@ -155,6 +155,30 @@ contract NFTWorld is ERC721, ReentrancyGuard {
     }
 
     /**
+     * @dev Function to get user NFTs
+     * @param user: address for accessing the NFTs associated with the particular user
+     */
+    function getNFTsByUser(
+        address user
+    ) public view returns (NFT[] memory) {
+        NFT[] memory result = new NFT[](tokenCount);
+
+        uint256 count = 0;
+        for (uint256 i = 1; i <= tokenCount; i++) {
+            if (nfts[i].owner == user || nfts[i].creator == user) {
+                result[count] = nfts[i];
+                count++;
+            }
+        }
+
+        // Resize the result array to the actual number of matching NFTs
+        assembly {
+            mstore(result, count)
+        }
+        return result;
+    }
+
+    /**
      * @dev Function to create a new collection
      * @param metadataHash URI for accessing the metadata associated with the collection
      */

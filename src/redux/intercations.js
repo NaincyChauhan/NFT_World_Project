@@ -50,8 +50,9 @@ export const loadAccount = async (provider, dispatch) => {
         let balance = await provider.getBalance(account);
         balance = ethers.formatEther(balance);
         dispatch({ type: "BALANCE_LOADED", balance });
-        balance && Login(account, dispatch);
-        return balance;
+        console.log("Load Account function is running well");
+        balance && await Login(account, dispatch);
+        return true;
     } catch (error) {
         if (error.code === -32002) {
             dispatch({ type: "ACCOUNT_LOADED", "account": "", "connecting": true });
@@ -61,6 +62,7 @@ export const loadAccount = async (provider, dispatch) => {
             console.error("Error requesting accounts:", error);
             // Handle other error cases
         }
+        return 0;
     }
 }
 
@@ -106,6 +108,40 @@ export const subscribeToEvents = (nftWorld, dispatch) => {
     });
 }
 
+// get user collection
+const user_collections_ = async (user, nftworld) => {
+    const transcation = await nftworld.getUserCollection(user);
+    const convertedArray = transcation.map(item => Number(item));
+
+    // Get All Collections
+    const user_collections = [];
+    for (const collectionId of convertedArray) {
+        const item = await nftworld.getCollection(collectionId);
+        const metadata = await GetMetadata(item.metadataURI);
+
+        // Add Item IN Items List
+        user_collections.push({
+            id: Number(item.id),
+            owner: item.owner,
+            ids: item.nftIds.map(id => Number(id)),
+            name: item.name,
+            data: metadata,
+        })
+    }
+    return user_collections;
+};
+
+// Load User Collections
+export const userCollections = async (nftworld, provider, dispatch) => {
+    try {
+        const signer = await provider.getSigner();
+        const user_collections = await user_collections_(signer.address, nftworld);
+        dispatch({ type: "LOAD_USER_COLLECTIONS", collections: user_collections });
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
 export const createcollection = async (metadata, name, provider, dispatch, nftworld) => {
     dispatch({ type: "NEW_COLLECTION_REQUEST" });
     try {
@@ -115,7 +151,7 @@ export const createcollection = async (metadata, name, provider, dispatch, nftwo
         const _event = collection_result.logs[0];
         if (_event.args[0] && _event.args[1]) {
             try {
-                dispatch({ type: "NEW_COLLECTION_SUCCESS", event: _event, collection_id: Number(_event.args[1]) });
+                dispatch({ type: "NEW_COLLECTION_SUCCESS", event: _event });
                 return { "status": 1, "collectionId": _event.args[1], "creator": _event.args[0] };
             } catch (error) {
                 return { "status": 0, "message": error };
@@ -128,42 +164,18 @@ export const createcollection = async (metadata, name, provider, dispatch, nftwo
     }
 }
 
-export const getCollection = async (provider, dispatch, nftworld) => {
-    try {
-        const signer = await provider.getSigner();
-        const transcation = await nftworld.getUserCollection(signer);
-        const convertedArray = transcation.map(item => Number(item));
-        dispatch({ type: "COLLECTIONS_LOADED", ids: convertedArray });
-
-        // Get All Collections
-        const userCollectionsData = [];
-        for (const collectionId of convertedArray) {
-            const collectionData = await nftworld.getCollection(collectionId);
-            const collectionObject = {
-                id: Number(collectionData[0]),
-                owner: collectionData[1],
-                ids: collectionData[2].map(id => Number(id)),
-                metadata: collectionData[3],
-                name: collectionData[4]
-            };
-            userCollectionsData.push(collectionObject);
-        }
-        dispatch({ type: "UPDATED_COLLECTION_DATA", collections: userCollectionsData });
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
 export const updateCollectionData = async (dispatch, collectionId, nftworld) => {
-    const collectionData = await nftworld.userCollection(collectionId);
-    const metadata = await GetMetadata(collectionData[3]);
+    const collectionData = await nftworld.getCollection(collectionId);
+    console.log("Update collection function is running here", collectionData);
+    const metadata = await GetMetadata(collectionData.metadataURI);
     const collectionObject = {
-        id: Number(collectionData[0]),
-        owner: collectionData[1],
-        ids: collectionData[2],
-        name: collectionData[4],
+        id: Number(collectionData.id),
+        owner: collectionData.owner,
+        ids: collectionData.nftIds,
+        name: collectionData.name,
         data: metadata,
     };
+    console.log("dubunging here", collectionId, collectionData, metadata, collectionObject);
     dispatch({ type: "NEW_COLLECTION_DATA", data: collectionObject });
 }
 
@@ -244,8 +256,7 @@ export const AllNFTs = async (dispatch, nftworld) => {
             logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
             descripation: metadata.info.descripation,
             price: Number(item.price),
-            data: metadata.keys
-        })
+        });
     }
     dispatch({ type: "NFT_DATA", nftData: items })
     dispatch({ type: "UPDATE_LOADING", loading: false });
@@ -255,14 +266,14 @@ export const allCollection = async (dispatch, nftworld) => {
     const collectionCount = await nftworld.collectionCount();
     let items = [];
     for (let i = 1; i <= collectionCount; i++) {
-        const item = await nftworld.collections(i);
+        const item = await nftworld.getCollection(i);
         const metadata = await GetMetadata(item.metadataURI);
 
         // Add Item IN Items List
         items.push({
             id: Number(item.id),
             owner: item.owner,
-            ids: item.nftIds,
+            ids: item.nftIds.map(id => Number(id)),
             name: item.name,
             data: metadata,
         })
@@ -284,7 +295,6 @@ export const getCollectionByNFTId = async (nftId, nftworld) => {
 
 export const getNFTById = async (nftId, nftworld) => {
     const nft_ = await nftworld.nfts(nftId);
-    const owner_ = await nftworld.ownerOf(nftId)
     const metadata = await GetMetadata(nft_[2])
     const item = {};
     item['itemId'] = Number(nft_.id);
@@ -296,14 +306,14 @@ export const getNFTById = async (nftId, nftworld) => {
     item['price'] = Number(nft_.price)
     item['forSale'] = nft_.forSale
     item['data'] = metadata.keys;
-    item['owner'] = owner_;
+    item['owner'] = nft_.owner;
     item['ownerdetail'] = {};
     item['creatordetail'] = {};
     const response = await getUserDetail(nft_[3]);
     if (response.status === 1) {
         item['creatordetail'] = response.data;
     }
-    const response1 = await getUserDetail(owner_);
+    const response1 = await getUserDetail(nft_.owner);
     if (response1.status === 1) {
         item['ownerdetail'] = response1.data;
     }
@@ -314,12 +324,12 @@ const tokens = (n) => {
     return ethers.parseEther(n.toString());
 }
 
-export const buyNow = async (nftId,value, nftworld,provider) => {
-    try {        
+export const buyNow = async (nftId, value, nftworld, provider) => {
+    try {
         const signer = await provider.getSigner();
-        const transaction = await nftworld.connect(signer).buyNFT(nftId,{value:tokens(value)});
+        const transaction = await nftworld.connect(signer).buyNFT(nftId, { value: tokens(value) });
         await transaction.wait();
-        return { "status": 1};
+        return { "status": 1 };
     } catch (error) {
         if (error.message.indexOf("revert") >= 0) {
             return { "status": 0, "error": error.reason };
@@ -328,4 +338,78 @@ export const buyNow = async (nftId,value, nftworld,provider) => {
             return { "status": 0, "error": "An error occurred" };
         }
     }
+}
+
+// Get Collection NFT Data
+export const getCollectionDetail = async (collection_id, nftworld) => {
+    const collection = await nftworld.getCollection(collection_id);
+    const metadata = await GetMetadata(collection.metadataURI);
+    const collectionItems = [];
+    for (let i = 0; i < collection.nftIds.length; i++) {
+        const itemId = collection.nftIds[i];
+        const item = await nftworld.nfts(itemId);
+        const metadata = await GetMetadata(item.mediaURI);
+
+        // Add Item IN Items List
+        collectionItems.push({
+            itemId: Number(item.id),
+            MediaType: Number(item.mediaType),
+            creator: item.creator,
+            owner: item.owner,
+            name: metadata.info.name,
+            forSale: item.forSale,
+            logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
+            descripation: metadata.info.descripation,
+            price: Number(item.price),
+        })
+    }
+    return {
+        id: Number(collection.id),
+        owner: collection.owner,
+        items: collectionItems,
+        name: collection.name,
+        data: metadata,
+    };
+
+}
+
+const user_nfts_ = async (address, nftworld) => {
+    const nft_ = await nftworld.getNFTsByUser(address);
+    const items = [];
+    for (let i = 0; i < nft_.length; i++) {
+        const item = nft_[i];
+        const metadata = await GetMetadata(item.mediaURI)
+        // Add Item IN Items List
+        items.push({
+            itemId: Number(item.id),
+            MediaType: Number(item.mediaType),
+            creator: item.creator,
+            owner: item.owner,
+            name: metadata.info.name,
+            forSale: item.forSale,
+            logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
+            descripation: metadata.info.descripation,
+            price: Number(item.price),
+        });
+    }
+    return {
+        owned: items.filter(item => item.owner === address),
+        created: items.filter(item => item.creator === address),
+        onSale: items.filter(item => item.forSale === true),
+    };
+}
+
+export const GetUserNFTs = async (address, nftworld) => {
+    const data = await user_nfts_(address, nftworld);
+    return data;
+}
+
+export const getUserData = async (address, nftworld) => {
+    // Get user all Nfts
+    const nft_data = await user_nfts_(address, nftworld)
+    // Get user all collections
+    const collection_data = await user_collections_(address, nftworld)
+    // Get user Detail 
+    const user = await getUserDetail(address, nftworld);
+    return { nfts: nft_data, collections: collection_data, user: user }
 }

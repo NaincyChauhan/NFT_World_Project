@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Header from '../../components/Partials/Header';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { getCollectionByNFTId, getNFTById, buyNow } from '../../redux/intercations';
 import { ajaxMessage, errorsHTMLMessage } from '../../components/Partials/Alert';
+import Footer from '../../components/Partials/Footer';
 const config = require("../../config.json");
 
 const Details = () => {
@@ -12,10 +13,12 @@ const Details = () => {
     const nftworld = useSelector(state => state.NFTWorld.nftWorld);
     const provider = useSelector(state => state.provider.connection);
     const balance = useSelector(state => state.provider.balance);
+    const account = useSelector(state => state.provider.account);
     const [nftDetail, setNftDetail] = useState();
     const [ethPrice, setEthPrice] = useState(0);
     const [collection, setCollection] = useState();
     const [loading, setLoading] = useState(false)
+    const [contentLoading, setContentLoading] = useState(false);
 
     const getEtherPrice = () => {
         axios
@@ -35,13 +38,14 @@ const Details = () => {
     }
 
     const getData = async () => {
+        setContentLoading(true);
         if (Object.keys(nftworld).length) {
             const nft_data_ = await getNFTById(nft_id, nftworld)
             setNftDetail(nft_data_);
             const collection = await getCollectionByNFTId(nft_id, nftworld);
-            console.log("Collection Data REturned Successfully", collection);
             setCollection(collection);
         }
+        setContentLoading(true);
     }
 
     // Buy now
@@ -82,7 +86,7 @@ const Details = () => {
                                         </div>
                                     </div>
                                     <div className="col-md-6">
-                                        <div className="item_info">
+                                        <div className="item_info">                                            
                                             <h2>{nftDetail.name} #{nftDetail.itemId}</h2>
                                             <div className="item_info_counts">
                                                 <div className="item_info_type"><i className="fa fa-image"></i>{nftDetail.MediaType === 0 ? "Art" : nftDetail.MediaType === 1 ? "Video" : "Music"}</div>
@@ -94,13 +98,13 @@ const Details = () => {
                                                     <h6>Creator</h6>
                                                     <div className="item_author">
                                                         <div className="author_list_pp">
-                                                            <a href="/autherprofile">
+                                                            <Link to={nftDetail.creator ===  account ? "/profile" : `/user/${nftDetail.creator}`}>
                                                                 <img className="lazy" src={nftDetail.creatordetail.image ? `${config["APPLICATION_URL"]}/storage/profiles/${nftDetail.creatordetail.image}` : "/images/author/author-1.jpg"} alt="" />
                                                                 <i className="fa fa-check"></i>
-                                                            </a>
+                                                            </Link>
                                                         </div>
                                                         <div className="author_list_info">
-                                                            <a href="/autherprofile">{nftDetail.creatordetail.name ? nftDetail.creatordetail.name : "Unknown"}</a>
+                                                            <Link to={nftDetail.creator ===  account ? "/profile" : `/user/${nftDetail.creator}`}>{nftDetail.creatordetail.name ? nftDetail.creatordetail.name : "Unknown"}</Link>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -110,13 +114,13 @@ const Details = () => {
                                                         <h6>Collection</h6>
                                                         <div className="item_author">
                                                             <div className="author_list_pp">
-                                                                <a href="/collection-detail">
+                                                                <Link to={`/collection/${collection.owner}/${collection.id}`}>
                                                                     <img className="lazy" src={`https://ipfs.io/ipfs/${collection.data.info.logo}`} alt="" />
                                                                     <i className="fa fa-check"></i>
-                                                                </a>
+                                                                </Link>
                                                             </div>
                                                             <div className="author_list_info">
-                                                                <a href="/collection-detail">{collection.name}</a>
+                                                                <Link to={`/collection/${collection.owner}/${collection.id}`}>{collection.name}</Link>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -135,13 +139,13 @@ const Details = () => {
                                                         <h6>Owner</h6>
                                                         <div className="item_author">
                                                             <div className="author_list_pp">
-                                                                <a href="/autherprofile">
+                                                                <Link to={nftDetail.owner ===  account ? "/profile" : `/user/${nftDetail.owner}`}>
                                                                     <img className="lazy" src={nftDetail.ownerdetail.image ? `${config["APPLICATION_URL"]}/storage/profiles/${nftDetail.ownerdetail.image}` : "/images/author/author-1.jpg"} alt="" />
                                                                     <i className="fa fa-check"></i>
-                                                                </a>
+                                                                </Link>
                                                             </div>
                                                             <div className="author_list_info">
-                                                                <a href="/autherprofile">{nftDetail.ownerdetail.name ? nftDetail.ownerdetail.name : "Unknown"}</a>
+                                                                <Link to={nftDetail.owner ===  account ? "/profile" : `/user/${nftDetail.owner}`}>{nftDetail.ownerdetail.name ? nftDetail.ownerdetail.name : "Unknown"}</Link>
                                                             </div>
                                                         </div>
 
@@ -172,6 +176,21 @@ const Details = () => {
                                                         Buy Now
                                                     </a>)
                                                 }
+
+                                                <div className="mt-3">
+                                                    <h6>Share Via:</h6>
+                                                    <div className="de-flex" id="social-icons">
+                                                        <div className="de-flex-col">
+                                                            <div className="social-icons">
+                                                                <a target="_blank" rel="noreferrer" href={`https://twitter.com/intent/tweet?url=${config["MAIN_URL"]}/collection/${nftDetail.name}/${nftDetail.itemId}`}><i className="fa fa-twitter fa-lg share-l"></i></a>
+                                                                <a target="_blank" rel="noreferrer" href={`https://www.facebook.com/sharer/sharer.php?u=${config["MAIN_URL"]}/collection/${nftDetail.name}/${nftDetail.itemId}`}><i className="fa fa-facebook fa-lg share-l"></i></a>
+                                                                <a target="_blank" rel="noreferrer" href={`https://www.linkedin.com/shareArticle?url=${config["MAIN_URL"]}/collection/${nftDetail.name}/${nftDetail.itemId}`}><i className="fa fa-linkedin fa-lg share-l"></i></a>
+                                                                <a target="_blank" rel="noreferrer" href={`https://wa.me/?text=${config["MAIN_URL"]}/collection/${nftDetail.name}/${nftDetail.itemId}`}><i className="fa fa-whatsapp fa-lg share-l"></i></a>
+                                                                <a target="_blank" rel="noreferrer" href={`mailto:?subject=I wanted you to see this site&amp;body=${config["MAIN_URL"]}/collection/${nftDetail.name}/${nftDetail.itemId}`}><i className="fa fa-envelope fa-lg share-l"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -213,10 +232,14 @@ const Details = () => {
                             </div>
                         </div>)
                     }
-                    <a href="#" id="back-to-top"></a>
+                    <Footer />
                 </div>
             ) : (
-                "404 Error is here"
+                contentLoading ? (
+                    <> Loading </>
+                ) : (
+                    <> Something Went Wrong </>
+                )
             )}
         </>
     );

@@ -9,10 +9,13 @@ import { ajaxMessage, errorsHTMLMessage } from "../../components/Partials/Alert"
 import UploadImage from "../../components/Requests/UploadImage";
 import { UploadMetadata } from '../../components/Requests/UploadMetadata';
 import { createNFT } from '../../redux/intercations';
+import { userCollectionSelector } from '../../redux/selectors';
 
 const Create = () => {
     const dispatch = useDispatch();
-    const collections = useSelector(state => state.NFTWorld.collections.collections);
+    const collections = useSelector(state => state.NFTWorld.userCollections);
+    // const collections = useSelector(userCollectionSelector);
+    console.log("this is the all user collections is ehre", collections);
     const nftworld = useSelector(state => state.NFTWorld.nftWorld);
     const provider = useSelector(state => state.provider.connection);
     const [NFTData_, setNFTData_] = useState([]);

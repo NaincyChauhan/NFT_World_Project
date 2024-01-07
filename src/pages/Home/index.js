@@ -2,23 +2,13 @@ import Banners from '../../components/Partials/Banners';
 import Footer from '../../components/Partials/Footer';
 import Header from '../../components/Partials/Header';
 import { useSelector } from 'react-redux';
-import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import NFTItem from '../../components/Partials/NFTItem';
 
 const Home = () => {
-    const [nftExtraVisibility, setNftExtraVisibility] = useState({});
     const loading = useSelector(state => state.NFTWorld.loading);
     const nftData = useSelector(state => state.NFTWorld.nftData);
     const collection = useSelector(state => state.NFTWorld.allCollections);
-    // console.log("these are the all connection is here", collection);
-
-    const toggleNftItemExtra = (index) => {
-        setNftExtraVisibility({
-            ...nftExtraVisibility,
-            [index]: !nftExtraVisibility[index] || false,
-        });
-    };
 
     const handleItemClick = (index) => {
         const extraElement = document.getElementById(`nft__item_extra_${index}`);

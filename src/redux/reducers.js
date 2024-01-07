@@ -60,10 +60,7 @@ const DefaultState = {
         isSuccessful: false
     },
     events: [],
-    collections: {
-        ids: [],
-        collections: []
-    },
+    userCollections: [],
     allCollections : [],
     nftData:[],
     userNFTS:[],
@@ -125,18 +122,16 @@ export const NFTWorld = (state = DefaultState, action) => {
                     isSuccessful: true,
                 },
                 events: [action.event, ...state.events],
-                collections: {
-                    ids: [...state.collections.ids, action.collection_id],
-                    collections: [...state.collections.collections],
-                },
+            }
+        case "LOAD_USER_COLLECTIONS":
+            return {
+                ...state,
+                userCollections:action.collections,
             }
         case "NEW_COLLECTION_DATA":
             return {
                 ...state,
-                collections: {
-                    ids: [...state.collections.ids],
-                    collections: [...state.collections.collections, action.data],
-                },
+                // allCollections:[...state.allCollections, action.collectionData],
             }
         case "NEW_COLLECTION_FAIL":
             return {
@@ -147,23 +142,6 @@ export const NFTWorld = (state = DefaultState, action) => {
                     isSuccessful: false,
                     isError: true,
                 },
-            }
-        case "COLLECTIONS_LOADED":
-            return {
-                ...state,
-                collections: {
-                    ids: action.ids,
-                    collections: [...state.collections.collections]
-                }
-            }
-        case "UPDATED_COLLECTION_DATA":
-            const collectionIds = state.collections.ids.map(id => Number(id));
-            return {
-                ...state,
-                collections: {
-                    ids: [...collectionIds],
-                    collections: action.collections,
-                }
             }
         case "NFT_DATA":
             return {

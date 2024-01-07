@@ -6,6 +6,7 @@
     "explorerURL": "#"
   },
   "APPLICATION_URL": "http://127.0.0.1:8000",
+  "MAIN_URL": "http://localhost:3000/",
   "DEFAULT_NETWORK": {
     "chainId": "31337",
     "name": "Hardhat",
