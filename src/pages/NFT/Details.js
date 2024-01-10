@@ -5,7 +5,6 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { getCollectionByNFTId, getNFTById, buyNow } from '../../redux/intercations';
 import { ajaxMessage, errorsHTMLMessage } from '../../components/Partials/Alert';
-import Footer from '../../components/Partials/Footer';
 const config = require("../../config.json");
 
 const Details = () => {
@@ -82,7 +81,7 @@ const Details = () => {
                                 <div className="row g-5">
                                     <div className="col-md-6 text-center">
                                         <div className="nft-image-wrapper">
-                                            <img src={nftDetail.logo} className="image-autosize img-fluid img-rounded mb-sm-30 nft_image" alt="NFT Details" />
+                                            <img src={nftDetail.logo} style={{maxWidth:"534px"}} className="image-autosize img-fluid img-rounded mb-sm-30 nft_image" alt="NFT Details" />
                                         </div>
                                     </div>
                                     <div className="col-md-6">
@@ -232,7 +231,6 @@ const Details = () => {
                             </div>
                         </div>)
                     }
-                    <Footer />
                 </div>
             ) : (
                 contentLoading ? (

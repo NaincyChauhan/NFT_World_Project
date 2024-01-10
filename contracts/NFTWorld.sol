@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
+import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
@@ -13,6 +14,13 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
  */
 
 contract NFTWorld is ERC721, ReentrancyGuard {
+    // Enum representing media types
+    enum MediaType {
+        Art,
+        Video,
+        Picture
+    }
+
     // Struct representing an individual NFT
     struct NFT {
         uint256 id;
@@ -78,6 +86,12 @@ contract NFTWorld is ERC721, ReentrancyGuard {
         _;
     }
 
+    // Modifier to validate mediaType
+    modifier validMediaType(uint8 _mediaType) {
+        require(_mediaType >= 1 && _mediaType <= 3, "Invalid media type");
+        _;
+    }
+
     /**
      * @dev Constructor
      */
@@ -130,7 +144,7 @@ contract NFTWorld is ERC721, ReentrancyGuard {
         uint256 price,
         bool forSale,
         uint256 collectionId
-    ) external collectionExists(collectionId) {
+    ) external collectionExists(collectionId) validMediaType(mediaType) {
         tokenCount++;
         require(!_exists(tokenCount), "NFT with this ID already exists");
         require(
@@ -158,9 +172,7 @@ contract NFTWorld is ERC721, ReentrancyGuard {
      * @dev Function to get user NFTs
      * @param user: address for accessing the NFTs associated with the particular user
      */
-    function getNFTsByUser(
-        address user
-    ) public view returns (NFT[] memory) {
+    function getNFTsByUser(address user) public view returns (NFT[] memory) {
         NFT[] memory result = new NFT[](tokenCount);
 
         uint256 count = 0;
@@ -296,5 +308,45 @@ contract NFTWorld is ERC721, ReentrancyGuard {
         manager.transfer(marketplaceFee);
         nfts[id].owner = msg.sender;
         emit NFTSold(id, seller, msg.sender, nfts[id].price);
+    }
+
+    function getPaginatedNFTs(
+        uint256 _pageNumber,
+        uint256 _pageSize,
+        uint256 _mediaTypeFilter
+    ) external view returns (NFT[] memory) {
+        require(
+            _pageNumber > 0 && _pageSize > 0,
+            "Invalid pagination parameters"
+        );
+        uint256 startIndex = (_pageNumber - 1) * _pageSize;
+        uint256 endIndex = startIndex + _pageSize;
+        if (endIndex > tokenCount) {
+            endIndex = tokenCount;
+        }
+
+        // Dynamically size the result array based on actual count of matching NFTs
+        NFT[] memory result = new NFT[](_pageSize);
+        uint256 resultIndex = 0;
+        uint256 count = 0;
+
+        for (uint256 i = startIndex; i < endIndex && count < _pageSize; i++) {
+            NFT storage currentNFT = nfts[i];
+            if (
+                currentNFT.mediaType == _mediaTypeFilter &&
+                currentNFT.mediaType < 3
+            ) {
+                result[resultIndex] = currentNFT;
+                resultIndex++;
+                count++;
+            }
+        }
+
+        // Resize the array to remove any unused slots
+        assembly {
+            mstore(result, resultIndex)
+        }
+
+        return result;
     }
 }

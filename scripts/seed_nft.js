@@ -10,12 +10,12 @@ async function main() {
     console.log("nftworld address",config[chainId].NFT.address,chainId);
     console.log("contract is here",nftworld);
 
-    const _metadata = "QmVHVYYgDhmKNkkcusyRoBfREnzM1DySouKv6PQWGMSotG";
-    for (let index = 1; index < 6; index++) {
-        const createCollection = await nftworld.connect(account1).createCollection(_metadata,"Collection "+index);
-        const result = await createCollection.wait();    
-        console.log("new NFT Created successfully",result, index)    
-    }
+    // const _metadata = "QmVHVYYgDhmKNkkcusyRoBfREnzM1DySouKv6PQWGMSotG";
+    // for (let index = 1; index < 6; index++) {
+    //     const createCollection = await nftworld.connect(account1).createCollection(_metadata,"Collection "+index);
+    //     const result = await createCollection.wait();    
+    //     console.log("new NFT Created successfully",result, index)    
+    // }
 
     const _nft_metadata = "QmdNDhJK8zhv8fF97BDXYXwC5hbzfvHG9MY2xxqxRHM8M6";
     for(let index = 1; index < 6; index++){

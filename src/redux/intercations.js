@@ -59,7 +59,7 @@ export const loadAccount = async (provider, dispatch) => {
             console.warn("Another request is processing. Please wait.");
             // You can retry the request after a short delay or inform the user accordingly.
         } else {
-            console.error("Error requesting accounts:", error);
+            console.log("Error requesting accounts:", error);
             // Handle other error cases
         }
         return 0;
@@ -138,7 +138,7 @@ export const userCollections = async (nftworld, provider, dispatch) => {
         const user_collections = await user_collections_(signer.address, nftworld);
         dispatch({ type: "LOAD_USER_COLLECTIONS", collections: user_collections });
     } catch (error) {
-        console.error('Error:', error);
+        console.log('Error:', error);
     }
 }
 
@@ -412,4 +412,9 @@ export const getUserData = async (address, nftworld) => {
     // Get user Detail 
     const user = await getUserDetail(address, nftworld);
     return { nfts: nft_data, collections: collection_data, user: user }
+}
+
+export const getNFTs__ = async (nftworld) => {
+    const nfts_ = await nftworld.getPaginatedNFTs(2,10,2);
+    console.log("all nft data is here !important data is here",nfts_);
 }

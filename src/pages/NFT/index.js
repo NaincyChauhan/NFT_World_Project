@@ -9,13 +9,11 @@ import { ajaxMessage, errorsHTMLMessage } from "../../components/Partials/Alert"
 import UploadImage from "../../components/Requests/UploadImage";
 import { UploadMetadata } from '../../components/Requests/UploadMetadata';
 import { createNFT } from '../../redux/intercations';
-import { userCollectionSelector } from '../../redux/selectors';
 
 const Create = () => {
     const dispatch = useDispatch();
     const collections = useSelector(state => state.NFTWorld.userCollections);
     // const collections = useSelector(userCollectionSelector);
-    console.log("this is the all user collections is ehre", collections);
     const nftworld = useSelector(state => state.NFTWorld.nftWorld);
     const provider = useSelector(state => state.provider.connection);
     const [NFTData_, setNFTData_] = useState([]);
@@ -167,9 +165,9 @@ const Create = () => {
                                         <p className="p-info">This is the type where your item will appear.</p>
                                         <div className='mb20'></div>
                                         <select onChange={formik.handleChange} onBlur={formik.handleBlur} name="type" className="form-select fullwidth" aria-label="Default select example">
-                                            <option key={0} value={0}>Art</option>
-                                            <option key={1} value={1}>Video</option>
-                                            <option key={2} value={2}>Music</option>
+                                            <option key={1} value={1}>Art</option>
+                                            <option key={2} value={2}>Video</option>
+                                            <option key={3} value={3}>Music</option>
                                         </select>
                                         {formik.touched.type && formik.errors.type ? (
                                             <div className="invalid-feedback">{formik.errors.type}</div>
