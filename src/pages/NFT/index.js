@@ -218,7 +218,6 @@ const Create = () => {
                         </div>
                     </div>
                 </section >
-
             </div >
             <Footer />
         </div >

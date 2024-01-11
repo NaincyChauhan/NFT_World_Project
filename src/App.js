@@ -7,11 +7,9 @@ import {
     loadNetwork,
     loadMarketplace,
     subscribeToEvents,
-    LoadUserNFT,
     AllNFTs,
     allCollection,
     userCollections,
-    getNFTs__
 } from './redux/intercations';
 import AppRouter from './pages/Router/index.js';
 // import { getUserNFTs } from './redux/selectors.js';
@@ -46,9 +44,7 @@ function App() {
                 subscribeToEvents(nftWorld, dispatch);
                 allCollection(dispatch,nftWorld);
                 userCollections(nftWorld,provider,dispatch )
-                AllNFTs(dispatch, nftWorld)
-                getNFTs__(nftWorld);
-                // getUserNFTs(provider)
+                AllNFTs(dispatch, nftWorld, 1, 12)
             } else {
                 console.log("Wrong NETWORK, plase select eth mainnet");
             }

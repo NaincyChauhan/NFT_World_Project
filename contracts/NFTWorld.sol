@@ -312,39 +312,28 @@ contract NFTWorld is ERC721, ReentrancyGuard {
 
     function getPaginatedNFTs(
         uint256 _pageNumber,
-        uint256 _pageSize,
-        uint256 _mediaTypeFilter
+        uint256 _pageSize
     ) external view returns (NFT[] memory) {
         require(
             _pageNumber > 0 && _pageSize > 0,
             "Invalid pagination parameters"
         );
-        uint256 startIndex = (_pageNumber - 1) * _pageSize;
-        uint256 endIndex = startIndex + _pageSize;
+
+        uint256 startIndex = (_pageNumber - 1) * _pageSize + 1;
+        uint256 endIndex = startIndex + _pageSize - 1;
+
+        if(startIndex > tokenCount && endIndex > tokenCount){
+            NFT[] memory emptyArray = new NFT[](0);
+            return emptyArray;
+        }
         if (endIndex > tokenCount) {
             endIndex = tokenCount;
         }
 
-        // Dynamically size the result array based on actual count of matching NFTs
-        NFT[] memory result = new NFT[](_pageSize);
-        uint256 resultIndex = 0;
-        uint256 count = 0;
+        NFT[] memory result = new NFT[](endIndex - startIndex + 1);
 
-        for (uint256 i = startIndex; i < endIndex && count < _pageSize; i++) {
-            NFT storage currentNFT = nfts[i];
-            if (
-                currentNFT.mediaType == _mediaTypeFilter &&
-                currentNFT.mediaType < 3
-            ) {
-                result[resultIndex] = currentNFT;
-                resultIndex++;
-                count++;
-            }
-        }
-
-        // Resize the array to remove any unused slots
-        assembly {
-            mstore(result, resultIndex)
+        for (uint256 i = startIndex; i <= endIndex; i++) {
+            result[i - startIndex] = nfts[i];
         }
 
         return result;

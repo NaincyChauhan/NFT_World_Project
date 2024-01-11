@@ -1,21 +1,13 @@
 import { useState, useEffect } from "react";
 import Header from "../../components/Partials/Header";
 import Footer from "../../components/Partials/Footer";
-// import "../../assets/css/Header.css";
 import { useSelector } from "react-redux";
 import NFTItem from "../../components/Partials/NFTItem";
 
 const Explore = () => {
     const [category, setCategory] = useState();
-    const [forBuy, setForBuy] = useState(true);
     const nfts = useSelector(state => state.NFTWorld.nftData);
 
-    const handleItemClick = (index) => {
-        const extraElement = document.getElementById(`nft__item_extra_${index}`);
-        if (extraElement) {
-            extraElement.classList.toggle("nft-extra-block");
-        }
-    };
     return (
         <div id='wrapper'>
             <Header />
@@ -32,7 +24,7 @@ const Explore = () => {
                             <div class="row">
 
                                 <div class="col-md-12 text-center">
-                                    <h1>Explore</h1>
+                                    <h1>Collection Explore</h1>
                                 </div>
                                 <div class="clearfix"></div>
                             </div>

@@ -2,13 +2,17 @@ import { useState, useEffect } from "react";
 import Header from "../../components/Partials/Header";
 import Footer from "../../components/Partials/Footer";
 // import "../../assets/css/Header.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import NFTItem from "../../components/Partials/NFTItem";
+import { getNFTByPagination } from "../../redux/intercations";
 
 const Explore = () => {
+    const dispatch = useDispatch();
     const [category, setCategory] = useState();
+    const nftworld = useSelector(state => state.NFTWorld.nftWorld);
     const [pagination, setPagination] = useState(1);
     const nfts = useSelector(state => state.NFTWorld.nftData);
+    const pageNumber = useSelector(state => state.NFTWorld.pageNumber);
 
     const handleItemClick = (index) => {
         const extraElement = document.getElementById(`nft__item_extra_${index}`);
@@ -17,12 +21,16 @@ const Explore = () => {
         }
     };
 
-    const changeCategory = (category_) => {
-        setCategory(category_)
-    }
-
-    const getNFTData = () => {
-        
+    const loadMoreNFT = async () => {
+        const nftData_ = await getNFTByPagination(nftworld, pageNumber+1, 12);
+        dispatch({ type: "UPDATE_NFT_DATA", nftData: nftData_,pageNumber: pageNumber+1 });
+        console.log("this is the page of number is here",pageNumber);
+        setPagination(pagination + 1);
+        if (nftData_.length < 1) {
+            document.getElementById('loadNFTBox').classList.add('n-d-none');
+        }
+        console.log("load nft data is here", nftData_);
+        console.log("Debugging 343434",nfts);
     }
     return (
         <div id='wrapper'>
@@ -54,8 +62,8 @@ const Explore = () => {
                 <section aria-label="section">
                     <div className="container">
                         <div className="row wow fadeIn">
-                            <div className="col-lg-12">
-                                {/* Filter Section Begin */}
+                            {/* Filter Section Begin */}
+                            {/* <div className="col-lg-12">
                                 <div className="items_filter">
                                     <div id="item_category" className="dropdown">
                                         <a href="#" className="btn-selector">All categories</a>
@@ -82,17 +90,20 @@ const Explore = () => {
                                     </div>
 
                                 </div>
-                                {/* Filter Section End */}
-                            </div>
+                            </div> */}
+                            {/* Filter Section End */}
+
                             {/* NFTs Section Begin */}
-                            {nfts && nfts.map((element, index) => (
-                                <NFTItem key={index} data={element} type={"all" + index} handleItemClick={handleItemClick} />
-                            ))}
+                            <div id="NFTItems" className="row">
+                                {nfts && nfts.map((element, index) => (
+                                    <NFTItem key={index} data={element} type={"all" + index} handleItemClick={handleItemClick} />
+                                ))}
+                            </div>
 
                             {/* NFTs Section End */}
 
-                            <div className="col-md-12 text-center">
-                                <a onClick={() => setPagination(pagination+1)} id="loadmore" className="btn-main wow fadeInUp lead">Load more</a>
+                            <div className="col-md-12 text-center" id="loadNFTBox">
+                                <a onClick={loadMoreNFT} id="loadNFT" className="btn-main wow fadeInUp lead">Load more</a>
                             </div>
                         </div>
                     </div>

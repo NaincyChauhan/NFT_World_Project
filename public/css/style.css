@@ -10498,12 +10498,12 @@ i.bg-color-secondary {
     align-items: center;
 }
 
-#loadmore {
+#loadmore , #loadNFT {
     display: inline-block;
     margin-top: 10px;
 }
 
-.d-item {
+.d-item, .n-d-none {
     display: none;
 }
 

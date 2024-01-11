@@ -272,7 +272,7 @@ describe('NFT PORFOLIO', () => {
             await createCollection.wait();
 
             const _nft_metadata = "QmdNDhJK8zhv8fF97BDXYXwC5hbzfvHG9MY2xxqxRHM8M6";
-            for (let index = 1; index < 31; index++) {
+            for (let index = 1; index < 36; index++) {
                 let mediaType = 1;
                 if (index > 4) {
                     mediaType = 2;
@@ -289,11 +289,11 @@ describe('NFT PORFOLIO', () => {
         describe('Success', () => {  
             it("Should Return NFT Count", async () => {
                 const totalNFT = await nft.tokenCount();
-                expect(Number(totalNFT)).to.equal(30);
+                expect(Number(totalNFT)).to.equal(35);
             });
     
             it("Should Return the Page1 10 NFTs data", async () => {
-                const nftData = await nft.getPaginatedNFTs(1,10,1);
+                const nftData = await nft.getPaginatedNFTs(2,10);
                 console.log("The NFTData is here",nftData,nftData.length);
             });
         });

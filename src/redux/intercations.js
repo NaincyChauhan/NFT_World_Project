@@ -237,27 +237,9 @@ export const NFTCreateSingle = async (metadata, provider, dispatch, nftworld, ty
     }
 }
 
-export const AllNFTs = async (dispatch, nftworld) => {
+export const AllNFTs = async (dispatch, nftworld, pageNumber, pageSize) => {
     dispatch({ type: "UPDATE_LOADING", loading: true });
-    const itemCount = await nftworld.tokenCount();
-    let items = [];
-    for (let i = 1; i <= itemCount; i++) {
-        const item = await nftworld.nfts(i);
-        const metadata = await GetMetadata(item.mediaURI);
-
-        // Add Item IN Items List
-        items.push({
-            itemId: Number(item.id),
-            MediaType: Number(item.mediaType),
-            creator: item.creator,
-            owner: item.owner,
-            name: metadata.info.name,
-            forSale: item.forSale,
-            logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
-            descripation: metadata.info.descripation,
-            price: Number(item.price),
-        });
-    }
+    const items = await getNFTByPagination(nftworld, pageNumber, pageSize);
     dispatch({ type: "NFT_DATA", nftData: items })
     dispatch({ type: "UPDATE_LOADING", loading: false });
 }
@@ -414,7 +396,24 @@ export const getUserData = async (address, nftworld) => {
     return { nfts: nft_data, collections: collection_data, user: user }
 }
 
-export const getNFTs__ = async (nftworld) => {
-    const nfts_ = await nftworld.getPaginatedNFTs(2,10,2);
-    console.log("all nft data is here !important data is here",nfts_);
+export const getNFTByPagination = async (nftworld,pageNumber,pageSize) => {
+    const nfts_ = await nftworld.getPaginatedNFTs(pageNumber,pageSize);
+    let items = [];
+    for (let i = 0; i < nfts_.length; i++) {
+        const item = nfts_[i];        
+        const metadata = await GetMetadata(item.mediaURI);    
+        // Add Item IN Items List
+        items.push({
+            itemId: Number(item.id),
+            MediaType: Number(item.mediaType),
+            creator: item.creator,
+            owner: item.owner,
+            name: metadata.info.name,
+            forSale: item.forSale,
+            logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
+            descripation: metadata.info.descripation,
+            price: Number(item.price),
+        });
+    }
+    return items;
 }
