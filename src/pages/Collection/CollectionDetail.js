@@ -48,7 +48,9 @@ const CollectionDetail = () => {
                             <div id="top"></div>
 
                             {/* Banner Section Start */}
-                            <section id="profile_banner" aria-label="section" className="text-light" style={{ backgroundImage: `url(https://ipfs.io/ipfs/${collection.data.info.banner})`, backgroundRepeat: "no-repeat", backgroundSize: "cover" }} data-bgimage="url(/images/background/banner.jpg) top">
+                            <section id="profile_banner" aria-label="section" className="text-light" style={{ 
+                            backgroundImage: `url(https://${config["pinata"]["gateway"]}/ipfs/${collection.data.info.banner}?pinataGatewayToken=${config["pinata"]["gateway_key"]})`,
+                            backgroundRepeat: "no-repeat", backgroundSize: "cover" }} data-bgimage="url(/images/background/banner.jpg) top">
                             </section>
                             {/* Banner Section End */}
 
@@ -60,7 +62,7 @@ const CollectionDetail = () => {
                                             <div className="d_profile">
                                                 <div className="profile_avatar">
                                                     <div className="d_profile_img">
-                                                        <img src={"https://ipfs.io/ipfs/" + collection.data.info.logo} alt="" />
+                                                        <img src={`https://${config["pinata"]["gateway"]}/ipfs/${collection.data.info.logo}?pinataGatewayToken=${config["pinata"]["gateway_key"]}`} alt="" />
                                                         <i className="fa fa-check"></i>
                                                     </div>
 

@@ -14,14 +14,13 @@ const UploadImage = async (_name,_desc,image,_price="0") => {
             data: formData,
             maxContentLength: 'Infinity',
             headers: {
-                pinata_api_key: config["pinata"]["pinata_api_key"],
-                pinata_secret_api_key:  config["pinata"]["pinata_secret_api_key"],
+                Authorization: `Bearer ${config["pinata"]["jwt_token"]}`,
                 "Content-Type": "multipart/form-data",
             }
         })
         return resFile.data.IpfsHash;
     } catch (error) {
-        console.log("ipfs uri upload error11: ", error,config["pinata"]["pinata_api_key"],config["pinata"]["pinata_secret_api_key"])
+        console.log("ipfs uri upload error11: ", error)
         return 0;
     }
 }

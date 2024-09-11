@@ -9,6 +9,7 @@ import Details from '../NFT/Details';
 import CollectionDetail from '../Collection/CollectionDetail';
 import UserProfile from '../User/UserProfile';
 import Explore from '../NFT/Explore';
+import CollectionExplore from '../Collection/CollectionExplore';
 const AppRouter = () => {
     return (
         <BrowserRouter>
@@ -21,6 +22,7 @@ const AppRouter = () => {
                 <Route exact path="/createcollection" element={<Add />} />
                 <Route exact path="/create" element={<Create />} />
                 <Route exact path='/explore' element={<Explore />} />
+                <Route exact path='/collections' element={<CollectionExplore />} />
                 <Route exact path='/nft/:nft_hash/:nft_id' element={<Details />} />
                 <Route exact path='/collection/:collection_hash/:collection_id' element={<CollectionDetail />} />
             </Routes>

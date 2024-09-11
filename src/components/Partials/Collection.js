@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+const config = require("../../config.json");
 
 const Collection = ({ data }) => {
     return (
@@ -6,14 +7,14 @@ const Collection = ({ data }) => {
             <div className="nft__item">
                 <div className="author_list_pp">
                     <Link to={`/collection/${data.owner}/${data.id}`} data-bs-toggle="tooltip" data-bs-placement="top" title={data.name}>
-                        <img className="lazy" src={"https://ipfs.io/ipfs/" + data.data.info.logo} alt="" />
+                        <img className="lazy" src={`https://${config["pinata"]["gateway"]}/ipfs/${data.data.info.logo}?pinataGatewayToken=${config["pinata"]["gateway_key"]}`} alt="" />
                         <i className="fa fa-check"></i>
                     </Link>
                 </div>
                 <div className="nft__item_wrap">
                     <Link to={`/collection/${data.owner}/${data.id}`}>
                         <div className="d-placeholder"></div>
-                        <img src={"https://ipfs.io/ipfs/" + data.data.info.banner} className="lazy nft__item_preview" alt="" />
+                        <img src={`https://${config["pinata"]["gateway"]}/ipfs/${data.data.info.banner}?pinataGatewayToken=${config["pinata"]["gateway_key"]}`} className="lazy nft__item_preview" alt="" />
                     </Link>
                 </div>
                 <div className="nft__item_info">

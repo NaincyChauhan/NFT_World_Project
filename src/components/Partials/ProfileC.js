@@ -22,14 +22,17 @@ const ProfileC = ({user,nfts,collection}) => {
                 {/* User Banner Section Start */}
                 <div id="top"></div>
                 {
-                    user ? (
+                    user.profilebanner ? (
                         <section id="profile_banner" aria-label="section" className="text-light"
                             style={{ backgroundImage: `url(${config["APPLICATION_URL"]}/storage/banners/${user.profilebanner})`, backgroundRepeat: "no-repeat", backgroundSize: "cover" }}
-                            data-bgimage="/images/author_single/author_banner.jpg top">
+                            data-bgimage="url(/images/author_single/author_banner.jpg) top">
                         </section>
                     ) :(
                         <section id="profile_banner" aria-label="section" className="text-light"
-                            data-bgimage="/images/author_single/author_banner.jpg top">
+                        style={{ 
+                            backgroundImage: `url(/images/author_single/author_banner.jpg)`,
+                            backgroundRepeat: "no-repeat", backgroundSize: "cover" }}
+                            data-bgimage="url(/images/author_single/author_banner.jpg) top">
                         </section>
                     )
                 }

@@ -1,14 +1,13 @@
 import axios from 'axios';
 const config = require("../../config.json");
 
-export const UploadMetadata = async (_metadata) => {
+export const UploadMetadata = async (_metadata) => {    
     try {        
         var request = {
             method: 'post',
             url: 'https://api.pinata.cloud/pinning/pinJSONToIPFS',
             headers: {
-                pinata_api_key: config["pinata"]["pinata_api_key"],
-                pinata_secret_api_key:  config["pinata"]["pinata_secret_api_key"],
+                Authorization: `Bearer ${config["pinata"]["jwt_token"]}`,
                 "Content-Type": "application/json",
             },
             data: _metadata

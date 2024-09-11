@@ -291,11 +291,6 @@ describe('NFT PORFOLIO', () => {
                 const totalNFT = await nft.tokenCount();
                 expect(Number(totalNFT)).to.equal(35);
             });
-    
-            it("Should Return the Page1 10 NFTs data", async () => {
-                const nftData = await nft.getPaginatedNFTs(2,10);
-                console.log("The NFTData is here",nftData,nftData.length);
-            });
         });
 
     });

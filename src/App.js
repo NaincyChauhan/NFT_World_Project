@@ -10,6 +10,7 @@ import {
     AllNFTs,
     allCollection,
     userCollections,
+    TopSeller,
 } from './redux/intercations';
 import AppRouter from './pages/Router/index.js';
 // import { getUserNFTs } from './redux/selectors.js';
@@ -25,8 +26,7 @@ function App() {
             const provider = loadProvider(dispatch);
             // Reload page when network changes
             window.ethereum.on("chainChanged", (chainId) => {
-                // window.location.reload();
-                console.log("Deubbing34343434");
+                window.location.reload();
             });
     
             // Fetch Current Metamask Account
@@ -42,9 +42,10 @@ function App() {
             if (config[chainId]) {
                 const nftWorld = await loadMarketplace(config[chainId].NFT.address, provider, dispatch);
                 subscribeToEvents(nftWorld, dispatch);
-                allCollection(dispatch,nftWorld);
-                userCollections(nftWorld,provider,dispatch )
-                AllNFTs(dispatch, nftWorld, 1, 12)
+                allCollection(dispatch,nftWorld, 1, 12);
+                userCollections(nftWorld,provider,dispatch );
+                AllNFTs(dispatch, nftWorld, 1, 12);
+                // TopSeller(nftWorld,dispatch)
             } else {
                 console.log("Wrong NETWORK, plase select eth mainnet");
             }

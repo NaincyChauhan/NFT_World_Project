@@ -62,7 +62,6 @@ const Create = () => {
                 "keys": _keys
             },
         }));
-        // const metadata = "metadata is here111";
         if (metadata !== 0) {
             const response = await createNFT(metadata, provider, dispatch, nftworld, values.type, values.price, true, values.collection)
             if (response.status === 1) {

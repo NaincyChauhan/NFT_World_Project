@@ -53,3 +53,20 @@ export const userCollectionSelector = createSelector([account, collectionData],
         return userCollections;
     }
 );
+
+export const filterNFTs = (nfts_data, buyNow, category) => {
+    if (buyNow) {
+        nfts_data = nfts_data.filter(
+            item => item.forSale === true
+        );
+    }
+
+    if (category > 0 && category < 4) {
+        console.log("category",category);
+        nfts_data = nfts_data.filter(
+            item => item.MediaType === Number(category)
+        )
+    }
+
+    return nfts_data;
+};

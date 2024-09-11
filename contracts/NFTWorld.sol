@@ -14,12 +14,6 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
  */
 
 contract NFTWorld is ERC721, ReentrancyGuard {
-    // Enum representing media types
-    enum MediaType {
-        Art,
-        Video,
-        Picture
-    }
 
     // Struct representing an individual NFT
     struct NFT {
@@ -115,7 +109,6 @@ contract NFTWorld is ERC721, ReentrancyGuard {
     ) external {
         tokenCount++;
         require(!_exists(tokenCount), "NFT with this ID already exists");
-        require(mediaType < 3, "Invalid Media Type");
         require(price > 0, "Price Must be greater then 0");
         _mint(msg.sender, tokenCount);
         NFT memory newNFT = NFT(
@@ -151,7 +144,6 @@ contract NFTWorld is ERC721, ReentrancyGuard {
             msg.sender == collections[collectionId].owner,
             "Only owner can perform this action"
         );
-        require(mediaType < 3, "Invalid Media Type");
         require(price > 0, "Price Must be greater then 0");
         _mint(msg.sender, tokenCount);
         NFT memory newNFT = NFT(
@@ -308,34 +300,5 @@ contract NFTWorld is ERC721, ReentrancyGuard {
         manager.transfer(marketplaceFee);
         nfts[id].owner = msg.sender;
         emit NFTSold(id, seller, msg.sender, nfts[id].price);
-    }
-
-    function getPaginatedNFTs(
-        uint256 _pageNumber,
-        uint256 _pageSize
-    ) external view returns (NFT[] memory) {
-        require(
-            _pageNumber > 0 && _pageSize > 0,
-            "Invalid pagination parameters"
-        );
-
-        uint256 startIndex = (_pageNumber - 1) * _pageSize + 1;
-        uint256 endIndex = startIndex + _pageSize - 1;
-
-        if(startIndex > tokenCount && endIndex > tokenCount){
-            NFT[] memory emptyArray = new NFT[](0);
-            return emptyArray;
-        }
-        if (endIndex > tokenCount) {
-            endIndex = tokenCount;
-        }
-
-        NFT[] memory result = new NFT[](endIndex - startIndex + 1);
-
-        for (uint256 i = startIndex; i <= endIndex; i++) {
-            result[i - startIndex] = nfts[i];
-        }
-
-        return result;
     }
 }

@@ -3,6 +3,7 @@ import NFTWorld from '../contract/artifacts/contracts/NFTWorld.sol/NFTWorld.json
 import Login from '../components/Requests/Login';
 import GetMetadata from '../components/Requests/GetMetadata';
 import getUserDetail from '../components/Requests/GetUserDetail';
+const config = require("../config.json");
 
 // // actions/reducer1Actions.js
 export const incrementCounter1 = (dispatch) => {
@@ -142,6 +143,7 @@ export const userCollections = async (nftworld, provider, dispatch) => {
     }
 }
 
+// Create New Collection
 export const createcollection = async (metadata, name, provider, dispatch, nftworld) => {
     dispatch({ type: "NEW_COLLECTION_REQUEST" });
     try {
@@ -164,9 +166,9 @@ export const createcollection = async (metadata, name, provider, dispatch, nftwo
     }
 }
 
+// Get Collection Data
 export const updateCollectionData = async (dispatch, collectionId, nftworld) => {
     const collectionData = await nftworld.getCollection(collectionId);
-    console.log("Update collection function is running here", collectionData);
     const metadata = await GetMetadata(collectionData.metadataURI);
     const collectionObject = {
         id: Number(collectionData.id),
@@ -244,22 +246,8 @@ export const AllNFTs = async (dispatch, nftworld, pageNumber, pageSize) => {
     dispatch({ type: "UPDATE_LOADING", loading: false });
 }
 
-export const allCollection = async (dispatch, nftworld) => {
-    const collectionCount = await nftworld.collectionCount();
-    let items = [];
-    for (let i = 1; i <= collectionCount; i++) {
-        const item = await nftworld.getCollection(i);
-        const metadata = await GetMetadata(item.metadataURI);
-
-        // Add Item IN Items List
-        items.push({
-            id: Number(item.id),
-            owner: item.owner,
-            ids: item.nftIds.map(id => Number(id)),
-            name: item.name,
-            data: metadata,
-        })
-    }
+export const allCollection = async (dispatch, nftworld,pageNumber,pageSize) => {
+    let items = await getCollectionByPagination(nftworld,pageNumber,pageSize);
     dispatch({ type: "LOAD_ALL_COLLECTIONS", collectionData: items })
 }
 
@@ -283,7 +271,8 @@ export const getNFTById = async (nftId, nftworld) => {
     item['MediaType'] = Number(nft_.mediaType);
     item['creator'] = nft_.creator;
     item['name'] = metadata.info.name;
-    item['logo'] = "https://ipfs.io/ipfs/" + metadata.info.logo;
+    // item['logo'] = "https://ipfs.io/ipfs/" + metadata.info.logo;
+    item['logo'] = `https://${config["pinata"]["gateway"]}/ipfs/${metadata.info.logo}?pinataGatewayToken=${config["pinata"]["gateway_key"]}`;
     item['descripation'] = metadata.info.descripation;
     item['price'] = Number(nft_.price)
     item['forSale'] = nft_.forSale
@@ -322,6 +311,40 @@ export const buyNow = async (nftId, value, nftworld, provider) => {
     }
 }
 
+
+export const editNFTPrice = async (nftId, price, provider, nftworld) => {
+    try {
+        const signer = await provider.getSigner();
+        const transaction = await nftworld.connect(signer).editNFTPrice(nftId, price);
+        await transaction.wait();
+        return { "status": 1 };
+    } catch (error) {
+        if (error.message.indexOf("revert") >= 0) {
+            return { "status": 0, "error": error.reason };
+        } else {
+            console.log("Error:", error);
+            return { "status": 0, "error": "An error occurred" };
+        }
+    }
+}
+
+export const editNFTSale = async (nftId, sale, provider, nftworld) => {
+    try {
+        if (sale == "true") { sale = true; }else{ sale = false; }
+        const signer = await provider.getSigner();
+        const transaction = await nftworld.connect(signer).editNFTSale(nftId, sale);
+        await transaction.wait();
+        return { "status": 1 };
+    } catch (error) {
+        if (error.message.indexOf("revert") >= 0) {            
+            return { "status": 0, "error": error.reason };
+        } else {
+            console.log("Error:", error);
+            return { "status": 0, "error": "An error occurred" };
+        }
+    }
+}
+
 // Get Collection NFT Data
 export const getCollectionDetail = async (collection_id, nftworld) => {
     const collection = await nftworld.getCollection(collection_id);
@@ -340,7 +363,8 @@ export const getCollectionDetail = async (collection_id, nftworld) => {
             owner: item.owner,
             name: metadata.info.name,
             forSale: item.forSale,
-            logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
+            // logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
+            logo: `https://${config["pinata"]["gateway"]}/ipfs/${metadata.info.logo}?pinataGatewayToken=${config["pinata"]["gateway_key"]}`,
             descripation: metadata.info.descripation,
             price: Number(item.price),
         })
@@ -369,7 +393,8 @@ const user_nfts_ = async (address, nftworld) => {
             owner: item.owner,
             name: metadata.info.name,
             forSale: item.forSale,
-            logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
+            // logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
+            logo: `https://${config["pinata"]["gateway"]}/ipfs/${metadata.info.logo}?pinataGatewayToken=${config["pinata"]["gateway_key"]}`,
             descripation: metadata.info.descripation,
             price: Number(item.price),
         });
@@ -396,24 +421,112 @@ export const getUserData = async (address, nftworld) => {
     return { nfts: nft_data, collections: collection_data, user: user }
 }
 
-export const getNFTByPagination = async (nftworld,pageNumber,pageSize) => {
-    const nfts_ = await nftworld.getPaginatedNFTs(pageNumber,pageSize);
-    let items = [];
-    for (let i = 0; i < nfts_.length; i++) {
-        const item = nfts_[i];        
-        const metadata = await GetMetadata(item.mediaURI);    
+// export const getNFTByPagination = async (nftworld, pageNumber, pageSize) => {
+//     const nfts_ = await nftworld.getPaginatedNFTs(pageNumber, pageSize);
+//     let items = [];
+//     for (let i = 0; i < nfts_.length; i++) {
+//         const item = nfts_[i];
+//         const metadata = await GetMetadata(item.mediaURI);
+//         // Add Item IN Items List
+//         items.push({
+//             itemId: Number(item.id),
+//             MediaType: Number(item.mediaType),
+//             creator: item.creator,
+//             owner: item.owner,
+//             name: metadata.info.name,
+//             forSale: item.forSale,
+//             logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
+//             logo: `https://${config["pinata"]["gateway"]}/ipfs/${metadata.info.logo}?pinataGatewayToken=${config["pinata"]["gateway_key"]}`
+//             descripation: metadata.info.descripation,
+//             price: Number(item.price),
+//         });
+//     }
+//     return items;
+// }
+
+export const getNFTByPagination = async (nftworld, _pageNumber, _pageSize) => {
+    let tokenCount = await nftworld.tokenCount();
+    let startIndex = (_pageNumber - 1) * _pageSize + 1;
+    let endIndex = startIndex + _pageSize - 1;
+
+    if (endIndex > tokenCount) {
+        endIndex = tokenCount;
+    }
+
+    let _items = [];
+    for (var i = startIndex; i <= endIndex; i++) {
+        const item = await nftworld.nfts(i);
+        const metadata = await GetMetadata(item.mediaURI);
         // Add Item IN Items List
-        items.push({
+        _items.push({
             itemId: Number(item.id),
             MediaType: Number(item.mediaType),
             creator: item.creator,
             owner: item.owner,
             name: metadata.info.name,
             forSale: item.forSale,
-            logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
+            // logo: "https://ipfs.io/ipfs/" + metadata.info.logo,
+            logo: `https://${config["pinata"]["gateway"]}/ipfs/${metadata.info.logo}?pinataGatewayToken=${config["pinata"]["gateway_key"]}`,
             descripation: metadata.info.descripation,
             price: Number(item.price),
         });
     }
-    return items;
+    return _items;
+}
+
+export const getCollectionByPagination = async (nftworld, _pageNumber, _pageSize) => {
+    let tokenCount = await nftworld.collectionCount();
+    let startIndex = (_pageNumber - 1) * _pageSize + 1;
+    let endIndex = startIndex + _pageSize - 1;
+
+    if (endIndex > tokenCount) {
+        endIndex = tokenCount;
+    }
+
+    let _items = [];
+    for (var i = startIndex; i <= endIndex; i++) {
+        const item = await nftworld.getCollection(i);
+        const metadata = await GetMetadata(item.metadataURI);
+
+        // Add Item IN Items List
+        _items.push({
+            id: Number(item.id),
+            owner: item.owner,
+            ids: item.nftIds.map(id => Number(id)),
+            name: item.name,
+            data: metadata,
+        })
+    }
+    return _items;
+}
+
+export const TopSeller = async (nftworld,dispatch) => {
+    console.log("this sithe nftworkdl docntainctact",nftworld);
+    try {
+        const filter = nftworld.filters.NFTSold();
+        const events = await nftworld.queryFilter(filter);
+
+        const sellerCounts = {};
+        let topSeller;
+        let maxSalesCount = 0;
+
+        events.forEach(event => {
+            const seller = event.args.from;
+
+            if (!sellerCounts[seller]) {
+                sellerCounts[seller] = 1;
+            } else {
+                sellerCounts[seller]++;
+            }
+
+            if (sellerCounts[seller] > maxSalesCount) {
+                maxSalesCount = sellerCounts[seller];
+                topSeller = seller;
+            }
+        });
+
+        console.log('Top Seller:', topSeller);
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }

@@ -65,7 +65,8 @@ const DefaultState = {
     nftData:[],
     userNFTS:[],
     loading:false,
-    pageNumber:1
+    pageNumber:1,
+    collectionPageNumber:1,
 }
 export const NFTWorld = (state = DefaultState, action) => {
     switch (action.type) {
@@ -150,11 +151,16 @@ export const NFTWorld = (state = DefaultState, action) => {
                 nftData: action.nftData
             }
         case "UPDATE_NFT_DATA":
-            console.log("this is the reducer data ishere", action.nftData, "and page number",action.pageNumber);
             return {
                 ...state,
                 nftData: [...state.nftData, ...action.nftData],
                 pageNumber: action.pageNumber
+            }
+        case "UPDATE_COLLECTION_DATA":
+            return {
+                ...state,
+                allCollections: [...state.allCollections, ...action.collectionData],
+                collectionPageNumber:action.pageNumber
             }
         case "UPDATE_LOADING":
             return {

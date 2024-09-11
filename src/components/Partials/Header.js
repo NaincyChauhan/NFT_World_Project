@@ -95,9 +95,9 @@ const Header = () => {
                                 <div className="de-flex-col">
                                     {/* <!-- logo begin --> */}
                                     <div id="logo">
-                                        <a href="https://testing.site">
+                                        <Link to="/">
                                             <img alt="" className="logo-2" src="/images/logo-2.png" />
-                                        </a>
+                                        </Link>
                                     </div>
                                     {/* <!-- logo close --> */}
                                 </div>
@@ -109,13 +109,13 @@ const Header = () => {
                                 {/* <!-- mainmenu begin --> */}
                                 <ul id="mainmenu">
                                     <li className="has-no-child">
-                                        <a href="https://testing.site">Home<span></span></a>
+                                        <Link to="/">Home<span></span></Link>
                                     </li>
                                     <li className="has-no-child">
                                         <a href="explore.html">Create<span></span></a>
                                     </li>
                                     <li>
-                                        <a href="https://testing.site">Pages<span></span></a>
+                                        <Link to="/">Pages<span></span></Link>
                                         <ul>
                                             <li><a href="author.html">Author</a></li>
                                             <li><a href="profile.html">Profile</a></li>
@@ -130,7 +130,7 @@ const Header = () => {
                                         </ul>
                                     </li>
                                     <li>
-                                        <a href="https://testing.site">Stats<span></span></a>
+                                    <Link to="/">Stats<span></span></Link>
                                         <ul>
                                             <li><a href="activity.html">Activity</a></li>
                                             <li><a href="rankings.html">Rankings</a></li>
