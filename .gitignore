@@ -29,7 +29,7 @@ coverage.json
 typechain
 typechain-types
 
-/src/config.json
+src/config.json
 
 # Hardhat files
 cache
